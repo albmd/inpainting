@@ -42,6 +42,9 @@ bool QImageToFloat(const QImage &in, int *width, int *height, float ***R, float 
     return r;
 }
 
+// FloatToQImage : Build a QImage from three float **. Without argument for format, QImage will be set to QImage::Format_RGB32
+// \param width is the input image width
+// \param height is the input image height
 
 void FloatToQImage(QImage &out, int width, int height, const float * const *R, const float * const *G, const float * const *B, QImage::Format format)
 {
@@ -68,6 +71,10 @@ void FloatToQImage(QImage &out, int width, int height, const float * const *R, c
 
 }
 
+// AllocateFloatArray : Allocate an array of float of size width x height.
+// Example of use : float ** t = AllocateFloatArray(20, 100);
+//                  t[19][99] = 0; // set 0 for the 'last' pixel
+// \return The new allocated array is returned by this function
 
 float ** AllocateFloatArray(int width, int height)
 {
@@ -77,6 +84,7 @@ float ** AllocateFloatArray(int width, int height)
     return r;
 }
 
+// Free memory of the array a
 void DestroyFloatArray(float ***a, int width)
 {
     if( *a == 0 ) return;

@@ -13,6 +13,7 @@
 #include "clanu_process.h"
 
 
+
 // --input=E:/Documents/Insa-GE/Modules/IF2/Clanu/2015/Data/coming-soon.jpg --mask=E:/Documents/Insa-GE/Modules/IF2/Clanu/2015/Data/coming-soon_mask.jpg --output=E:/Documents/Insa-GE/Modules/IF2/Clanu/2015/Data/coming-soon_out_IFQ1.jpg
 int main(int argc, char *argv[])
 {
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
         // ------------------------------------------
         // Opening images
         int In_w, In_h;   // width and height for input image
-        float **In_R = 0, **In_G  = 0 , **In_B = 0; // float arrays for input
+        float **In_R = 0, **In_G  = 0 , **In_B = 0; // float arrays for input, ce sont les matrices de pixels R, G et B
 
         int Mask_w, Mask_h;
         float **Mask_R = 0, **Mask_G  = 0 , **Mask_B = 0; // float arrays for mask
@@ -95,7 +96,7 @@ int main(int argc, char *argv[])
 
         // Allocate spaces for output
         std::cout << "> Allocate output space     " ;
-        Out_R             = AllocateFloatArray( In_w, In_h);
+        Out_R             = AllocateFloatArray( In_w, In_h); //Si on est en nuances de gris (isGray==true), la couche R sera utilisée
         if(!isGray) Out_G = AllocateFloatArray( In_w, In_h);
         if(!isGray) Out_B = AllocateFloatArray( In_w, In_h);
         std::cout << " done !" << std::endl;
