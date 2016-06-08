@@ -32,27 +32,36 @@ void InpaintingBW(float **Iout, float **Iin, float **Mask, int width, int height
 //float **Iout = y, l'image qu'on rend.
     /* Le programme commence ici */
     //b = Ic;
-        float **b=Iin;
+        float **b=0;
+        b = CreationTableau2D(width,height);//Création du tableau dynamique
+        RecopieMatrice(Iin, b, width, height); //Iin=>b ; b=In
 
     //xk = b;
-        float **xk=b;
+        float **xk=0;
+        xk = CreationTableau2D(width,height);//Création du tableau dynamique
+        RecopieMatrice(b, xk, width, height);//b=>xk ; xk=b
     //res = 1;
         double res=1.0;
     //rk = b - matrice_A(xk,Masque); %%rk est une matrice
-        float** rk = Iin; //Pour créer le tableau à la bonne dimension
-        float** temp = Iin; //Tableau à la bonne dimension
+        float **rk=0;
+        rk = CreationTableau2D(width,height);//Création du tableau dynamique
+        float **temp=0;
+        temp = CreationTableau2D(width,height);//Création du tableau dynamique
         matrice_A(temp, xk, Mask, width, height); //temp=matrice_A(xk,Masque)
         Sum2MatTerm2Term(b, temp, rk, width, height, -1.0); //rk=b-matrice_A(xk,Masque)
 
     //pk=rk;  %%pk est une matrice
-        float** pk=rk;
+        float **pk=0;
+        pk = CreationTableau2D(width,height);//Création du tableau dynamique
+        RecopieMatrice(rk, pk, width, height); //pk=rk
 
 
     //while res > 10^(-2),
         while (res>0.01)
         {
         //Apk=matrice_A(pk,Masque); %%OK méthode implémentée
-        float** Apk = Iin; //Tableau à la bonne dimension
+        float **Apk=0;
+        Apk = CreationTableau2D(width,height);//Création du tableau dynamique
         matrice_A(Apk, pk, Mask, width, height);
 
         //alphak = sum(sum(rk.*rk))/sum(sum(Apk.*pk)); %%Somme (OK) et produit terme à terme (OK) donne un SCALAIRE
@@ -70,14 +79,19 @@ void InpaintingBW(float **Iout, float **Iin, float **Mask, int width, int height
 
         //xk = xk + alphak*pk; %%Somme terme à terme (A FAIRE) et produit matriciel (PAS OK)
         Sum2MatTerm2Term(xk, pk, temp, width, height, alphak); //temp=xk + alphak*pk
-        xk=temp; //xk = xk + alphak*pk;
+        RecopieMatrice(temp, xk, width, height);//xk = xk + alphak*pk;
 
         //rk=rk-alphak*Apk;
         Sum2MatTerm2Term(rk, Apk, temp, width, height, -1.0*alphak);//Si problème, il vient du "-1.0*alphak" | temp=rk-alphak*Apk
-        float **rk=temp; //rk=rk-alphak*Apk
+        float **rk=0;
+        rk = CreationTableau2D(width,height);//Création du tableau dynamique
+        RecopieMatrice(temp, rk, width, height);//rk=rk-alphak*Apk
 
         //res=rk(:)'*rk(:)/(N1*N2);
         /*Une fois que ça sera compris, ça ira beaucoup mieux ! :p*/
+        Prod2MatTerm2Term(rk, rk, temp, width, height); //temp=rk.*rk
+        ProduitScalaire2D(temp, res, width, height);//res=sum(sum(temp))=sum(sum(rk.*rk))
+        res=res/(width*height);
 
         //betak=sum(sum(rk.*rk))/r;
         Prod2MatTerm2Term(rk, rk, temp, width, height);//temp=rk.*rk
@@ -87,7 +101,7 @@ void InpaintingBW(float **Iout, float **Iin, float **Mask, int width, int height
 
         //pk=rk+betak*pk;
         Sum2MatTerm2Term(rk, pk, temp, width, height, betak); //temp=rk + betak*pk
-        pk=temp;
+        RecopieMatrice(temp, pk, width, height);
         }
 
         //y=matrice_A(xk,ones(size(Ic)));
@@ -102,10 +116,13 @@ void InpaintingBW(float **Iout, float **Iin, float **Mask, int width, int height
 }
 void matrice_A(float **JOut, float **ImageIn, float **Mask, int width, int height)
 {
+    JOut = CreationTableau2D(width, height);
+    ImageIn = CreationTableau2D(width, height);
+    Mask = CreationTableau2D(width, height);
 //REMPLISSAGE DE J par des zéros, équivalent J=zeros(size(I)) de MATLAB
 for (int j=0; j<width; j++){
     for(int i=0; i<height; i++){
-        JOut[j][i]=0;
+        JOut[j][i]=0.0;
     }
 }
 
@@ -117,10 +134,10 @@ for(int y=0; y<height; y++){
     int bool_ymoins=(y>0) ? 1 : 0;  //Même chose
     //MAX et MIN DE LA BOUCLE i 1->N1
     //iplus = min(i+1,N1);
-    int yplus=(y+2<height) ? y+2 : height;
+    int yplus=(y+2<height) ? y+2 : height-1;
     //imoins = max(i-1,1);
     int ymoins=(y>1) ? y : 0; // 0 au second facteur et pas 1 pour prendre en compte le décalage MATLAB/C. Prem pixel en MATLAB = 1, 0 en C
-    for(int x=1; x<=width; x++){
+    for(int x=0; x<width; x++){
         //BOOLEENS DE LA BOUCLE j 1->N2
         //bool_jplus = j<N2;
         int bool_xplus=(x+1<width-1) ? 1 : 0;  //bool_iplus=1 si i<N1, =0 si i>=N1. Traité comme dans MATLAB, utile pour la suite
@@ -174,6 +191,22 @@ void ProduitScalaire2D(float **Matrice, double SommeScal, int width, int height)
             SommeScal=SommeScal+Matrice[j][i];
         }
     }
+}
+
+void RecopieMatrice(float **Matrice1, float **Matrice2, int width, int height)
+{
+    for (int j=0; j<width; j++){
+        for(int i=0; i<height; i++){
+            Matrice2[j][i]=Matrice1[j][i];
+        }
+    }
+}
+float ** CreationTableau2D(int width, int height)
+{
+float ** tableau = new float*[width];
+  for(int i=0; i< width; i++)
+    tableau[i] = new float[height];
+  return tableau;
 }
 
 /*

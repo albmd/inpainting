@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
         std::cout << " done !" << std::endl;
         // ------------------------------------------
 
-
+/*
         // ------------------------------------------
         // Appel de la fonction de traitement Question 1
         // Call student processing function
@@ -117,10 +117,10 @@ int main(int argc, char *argv[])
         FloatToQImage( OutputImage, In_w, In_h, Out_R, Out_G, Out_B, InputImage.format());
         std::cout << " done !" << std::endl;
         // ------------------------------------------
+*/
 
 
-
-        /*  //  <- Remove for question 2
+        //  <- Remove for question 2
         // ------------------------------------------
         // Appel de la fonction de traitement Question 2
         // Call student processing function
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
         FloatToQImage( OutputImage, In_w, In_h, Out_R, 0, 0, InputImage.format());
         std::cout << " done !" << std::endl;
         // ------------------------------------------
-        */ //   <- Remove for question 2
+         //   <- Remove for question 2
 
 
 
