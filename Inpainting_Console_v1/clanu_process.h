@@ -10,9 +10,11 @@ void InpaintingBW(float **Iout, float **Iin, float **Mask, int width, int height
 void InpaintingColor(float **Rout, float **Gout, float **Bout, float **Rin, float **Gin, float **Bin, float **Mask, int width, int height, double param);
 
 //Add your own functions' declaration below
-
-
-
+void matrice_A(float **JOut, float **ImageIn, float **Mask, int width, int height);
+void Prod2MatTerm2Term(float **Mat1, float **Mat2, float **MatRes, int width, int height);
+void Sum2MatTerm2Term(float **Mat1, float **Mat2, float **MatRes, int width, int height, double param);
+//void Soustr2MatTerm2Term(float **Mat1, float **Mat2, float **MatRes, int width, int height);
+void ProduitScalaire2D(float **Matrice, double SommeScal, int width, int height);
 
 
 // nothing after this line
