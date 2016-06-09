@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
 */
 
 
+
         //  <- Remove for question 2
         // ------------------------------------------
         // Appel de la fonction de traitement Question 2
@@ -134,7 +135,7 @@ int main(int argc, char *argv[])
         FloatToQImage( OutputImage, In_w, In_h, Out_R, 0, 0, InputImage.format());
         std::cout << " done !" << std::endl;
         // ------------------------------------------
-         //   <- Remove for question 2
+        //   <- Remove for question 2
 
 
 
